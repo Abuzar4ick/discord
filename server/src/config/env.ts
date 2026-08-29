@@ -15,4 +15,5 @@ export const ENV = {
   PORT: process.env.PORT || 3000,
   NODE_ENV: process.env.NODE_ENV || "development",
   DATABASE_URL: required("DATABASE_URL"),
+  CLIENT_URL: process.env.CLIENT_URL || "http://localhost:5173",
 };
