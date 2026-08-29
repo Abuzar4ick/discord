@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 
-import { ENV } from "./env";
+import { ENV } from "./env.js";
 
 if (!ENV.DATABASE_URL) {
   console.error("DATABASE_URL is not defined in the environment variables.");
