@@ -19,4 +19,6 @@ export const ENV = {
   RESEND_API_KEY: required("RESEND_API_KEY"),
   EMAIL_FROM: required("EMAIL_FROM"),
   EMAIL_FROM_NAME: required("EMAIL_FROM_NAME"),
+  JWT_ACCESS_SECRET: required("JWT_ACCESS_SECRET"),
+  JWT_REFRESH_SECRET: required("JWT_REFRESH_SECRET"),
 };
