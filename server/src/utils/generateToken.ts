@@ -20,6 +20,9 @@ export const generateToken = (
     { expiresIn: "7d" },
   );
 
+  // Store the refresh token in Redis
+  authRepository.storeRefreshToken(user.id.toString(), refreshToken);
+
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: ENV.NODE_ENV === "production",

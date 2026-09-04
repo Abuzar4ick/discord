@@ -5,7 +5,12 @@ import { errorHandler } from "./middlewares/errorHandler.js";
 
 import { ENV } from "./config/env.js";
 
+import { connectRedis } from "./config/redis.js";
+
 const app = express();
+
+// Connect to Redis
+connectRedis();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

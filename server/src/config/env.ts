@@ -21,4 +21,5 @@ export const ENV = {
   EMAIL_FROM_NAME: required("EMAIL_FROM_NAME"),
   JWT_ACCESS_SECRET: required("JWT_ACCESS_SECRET"),
   JWT_REFRESH_SECRET: required("JWT_REFRESH_SECRET"),
+  REDIS_URL: required("REDIS_URL"),
 };
