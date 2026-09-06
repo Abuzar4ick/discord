@@ -1,5 +1,6 @@
 import pool from "../config/db.js";
 import { redisClient } from "../config/redis.js";
+import { CreateUser } from "../types/user.js";
 
 export const authRepository = {
   async findUserByEmail(email: string): Promise<Express.User | null> {
@@ -16,7 +17,7 @@ export const authRepository = {
     return result.rows[0];
   },
 
-  async createUser(data: Express.User): Promise<Express.User> {
+  async createUser(data: CreateUser): Promise<Express.User> {
     const query =
       "INSERT INTO users (email, password, username) VALUES ($1, $2, $3) RETURNING *";
 
@@ -59,7 +60,7 @@ export const authRepository = {
 
   storeVerificationData: async (
     email: string,
-    data: Express.User,
+    data: CreateUser,
   ): Promise<void> => {
     await redisClient.setEx(`user:${email}`, 300, JSON.stringify(data));
   },

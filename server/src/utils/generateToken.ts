@@ -4,7 +4,7 @@ import { ENV } from "../config/env.js";
 import { authRepository } from "../repositories/auth.repository.js";
 
 // Generate a JWT token for a user
-export const generateToken = (
+export const generateToken = async (
   user: { id: number; email: string },
   res: Response,
 ) => {
@@ -21,7 +21,7 @@ export const generateToken = (
   );
 
   // Store the refresh token in Redis
-  authRepository.storeRefreshToken(user.id.toString(), refreshToken);
+  await authRepository.storeRefreshToken(user.id.toString(), refreshToken);
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,

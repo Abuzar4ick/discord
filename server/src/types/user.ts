@@ -6,3 +6,5 @@ export interface User {
   avatar?: string;
   created_at?: Date;
 }
+
+export type CreateUser = Omit<User, "id">;
