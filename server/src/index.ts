@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 
+import routes from "./routes/index.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 import { ENV } from "./config/env.js";
@@ -15,6 +16,8 @@ connectRedis();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
+
+app.use("/api", routes);
 
 app.use(errorHandler);
 

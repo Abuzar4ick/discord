@@ -1,24 +1,35 @@
 import type { Response } from "express";
 import { authRepository } from "../repositories/auth.repository.js";
 import { generateToken } from "../utils/generateToken.js";
-import { notFound, badRequest } from "../utils/response.js";
+import {
+  notFound,
+  badRequest,
+  unauthorized,
+  conflict,
+} from "../utils/response.js";
 import { sendOTPMessage } from "../emails/emailHandler.js";
+import { CreateUser } from "../types/user.js";
+import bcrypt from "bcrypt";
 
 export const authService = {
-  async signup(data: Express.User) {
+  async signup(data: CreateUser) {
     const existingUser = await authRepository.findUserByEmail(data.email);
     if (existingUser) {
-      throw new Error("User already exists");
+      throw conflict("User already exists");
     }
 
     const isUsernameTaken = await authRepository.findUserByUsername(
       data.username,
     );
     if (isUsernameTaken) {
-      throw new Error("Username already taken");
+      throw conflict("Username already taken");
     }
 
     await sendOTPMessage(data.email);
+
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
+    data.password = hashedPassword;
 
     await authRepository.storeVerificationData(data.email, data);
 
@@ -28,12 +39,12 @@ export const authService = {
   async verifyOTP(email: string, otp: string, res: Response) {
     const isValidOTP = await authRepository.verifyOTPCode(email, otp);
     if (!isValidOTP) {
-      throw new Error("Invalid OTP");
+      throw unauthorized("Invalid OTP");
     }
 
     const userData = await authRepository.getVerificationData(email);
     if (!userData) {
-      throw new Error("User data not found");
+      throw badRequest("Verification data expired or not found");
     }
 
     const newUser = await authRepository.createUser(userData);
@@ -42,7 +53,7 @@ export const authService = {
     await authRepository.deleteOTPCode(email);
     await authRepository.deleteVerificationData(email);
 
-    const accessToken = generateToken(newUser, res);
+    const accessToken = await generateToken(newUser, res);
     return { accessToken };
   },
 
@@ -52,16 +63,17 @@ export const authService = {
       throw notFound("User not found");
     }
 
-    if (user.password !== password) {
-      throw badRequest("Invalid password or email");
+    const passwordMatches = await bcrypt.compare(password, user.password);
+    if (!passwordMatches) {
+      throw unauthorized("Invalid password or email");
     }
 
-    const accessToken = generateToken(user, res);
+    const accessToken = await generateToken(user, res);
     return { accessToken };
   },
 
   async logout(userId: string, res: Response) {
     await authRepository.deleteRefreshToken(userId);
     res.clearCookie("refreshToken");
-  }
+  },
 };

@@ -43,3 +43,7 @@ export function unauthorized(message = "Unauthorized") {
 export function forbidden(message = "Forbidden") {
   return new AppError(message, 403);
 }
+
+export function internalServerError(message = "Internal server error") {
+  return new AppError(message, 500);
+}
