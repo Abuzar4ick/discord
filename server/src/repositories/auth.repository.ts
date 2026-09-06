@@ -1,27 +1,30 @@
 import pool from "../config/db.js";
 import { redisClient } from "../config/redis.js";
 
-interface User {
-  id?: number;
-  username: string;
-  email: string;
-  password: string;
-  avatar?: string;
-  created_at?: Date;
-}
-
 export const authRepository = {
-  async findUserByEmail(email: string): Promise<User | null> {
+  async findUserByEmail(email: string): Promise<Express.User | null> {
     const query = "SELECT * FROM users WHERE email = $1";
     const result = await pool.query(query, [email]);
 
     return result.rows[0];
   },
 
-  async createUser(email: string, password: string): Promise<User> {
+  async findUserByUsername(username: string): Promise<Express.User | null> {
+    const query = "SELECT * FROM users WHERE username = $1";
+    const result = await pool.query(query, [username]);
+
+    return result.rows[0];
+  },
+
+  async createUser(data: Express.User): Promise<Express.User> {
     const query =
-      "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *";
-    const result = await pool.query(query, [email, password]);
+      "INSERT INTO users (email, password, username) VALUES ($1, $2, $3) RETURNING *";
+
+    const result = await pool.query(query, [
+      data.email,
+      data.password,
+      data.username,
+    ]);
 
     return result.rows[0];
   },
@@ -52,5 +55,21 @@ export const authRepository = {
 
   deleteRefreshToken: async (userId: string): Promise<void> => {
     await redisClient.del(userId);
+  },
+
+  storeVerificationData: async (
+    email: string,
+    data: Express.User,
+  ): Promise<void> => {
+    await redisClient.setEx(`user:${email}`, 300, JSON.stringify(data));
+  },
+
+  getVerificationData: async (email: string): Promise<Express.User | null> => {
+    const data = await redisClient.get(`user:${email}`);
+    return data ? JSON.parse(data) : null;
+  },
+
+  deleteVerificationData: async (email: string): Promise<void> => {
+    await redisClient.del(`user:${email}`);
   },
 };

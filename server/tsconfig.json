@@ -10,9 +10,9 @@
     "moduleResolution": "node16", // How TS finds modules (node_modules lookup)
     "resolveJsonModule": true, // Allows importing .json files
     "forceConsistentCasingInFileNames": true, // Prevents case-sensitivity bugs
-    "typeRoots": ["node_modules/@types", "./types"], // Where to find type definitions
+    "typeRoots": ["node_modules/@types", "src/types"], // Where to find type definitions
     "ignoreDeprecations": "6.0" // Suppresses deprecation warnings for features removed in TS 6.0
   },
-  "include": ["src/**/*.ts", "types/**/*.d.ts"], // Which files to compile
+  "include": ["src/**/*.ts", "src/types/**/*.d.ts"], // Which files to compile
   "exclude": ["node_modules"] // Which files to ignore
 }
