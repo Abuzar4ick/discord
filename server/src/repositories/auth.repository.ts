@@ -17,6 +17,13 @@ export const authRepository = {
     return result.rows[0];
   },
 
+  async findUserById(id: string): Promise<Express.User | null> {
+    const query = "SELECT * FROM users WHERE id = $1";
+    const result = await pool.query(query, [id]);
+
+    return result.rows[0];
+  },
+
   async createUser(data: CreateUser): Promise<Express.User> {
     const query =
       "INSERT INTO users (email, password, username) VALUES ($1, $2, $3) RETURNING *";

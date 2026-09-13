@@ -53,6 +53,17 @@ export const authController = {
     success(res, result);
   }),
 
+  refreshToken: asyncHandler(async (req: Request, res: Response) => {
+    const refreshToken = req.cookies?.refreshToken;
+
+    if (!refreshToken || typeof refreshToken !== "string") {
+      throw badRequest("Refresh token is required.");
+    }
+
+    const result = await await authService.refreshToken(refreshToken, res);
+    success(res, result);
+  }),
+
   logout: asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {

@@ -9,7 +9,9 @@ import {
 } from "../utils/response.js";
 import { sendOTPMessage } from "../emails/emailHandler.js";
 import { CreateUser } from "../types/user.js";
+import { ENV } from "../config/env.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const authService = {
   async signup(data: CreateUser) {
@@ -70,6 +72,42 @@ export const authService = {
 
     const accessToken = await generateToken(user, res);
     return { accessToken };
+  },
+
+  async refreshToken(refreshToken: string, res: Response) {
+    let payload: { id?: string };
+
+    try {
+      payload = jwt.verify(refreshToken, ENV.JWT_REFRESH_SECRET as string) as {
+        id?: string;
+      };
+    } catch (error) {
+      throw unauthorized("Invalid refresh token.");
+    }
+
+    if (!payload.id) {
+      throw unauthorized("Invalid refresh token payload.");
+    }
+
+    const stored = await authRepository.getRefreshToken(payload.id);
+    if (!stored || stored !== refreshToken) {
+      throw unauthorized("Refresh token not found.");
+    }
+
+    const existingUser = await authRepository.findUserById(payload.id);
+    if (!existingUser) {
+      throw unauthorized("User not found.");
+    }
+
+    const newAccessToken = jwt.sign(
+      { id: payload.id },
+      ENV.JWT_ACCESS_SECRET!,
+      {
+        expiresIn: "15m",
+      },
+    );
+
+    return { newAccessToken }
   },
 
   async logout(userId: string, res: Response) {
