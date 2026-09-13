@@ -7,7 +7,7 @@ import {
   unauthorized,
   conflict,
 } from "../utils/response.js";
-import { sendOTPMessage } from "../emails/emailHandler.js";
+import { sendVerificationMessage } from "../emails/emailHandler.js";
 import { CreateUser } from "../types/user.js";
 import { ENV } from "../config/env.js";
 import bcrypt from "bcrypt";
@@ -27,7 +27,7 @@ export const authService = {
       throw conflict("Username already taken");
     }
 
-    await sendOTPMessage(data.email);
+    await sendVerificationMessage(data.email);
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
@@ -35,13 +35,13 @@ export const authService = {
 
     await authRepository.storeVerificationData(data.email, data);
 
-    return { message: "OTP sent to email" };
+    return { message: "Verification email sent" };
   },
 
-  async verifyOTP(email: string, otp: string, res: Response) {
-    const isValidOTP = await authRepository.verifyOTPCode(email, otp);
-    if (!isValidOTP) {
-      throw unauthorized("Invalid OTP");
+  async verifyEmail(res: Response, token: string) {
+    const email = await authRepository.consumeEmailVerificationToken(token);
+    if (!email) {
+      throw unauthorized("Invalid or expired verification token.");
     }
 
     const userData = await authRepository.getVerificationData(email);
@@ -51,8 +51,7 @@ export const authService = {
 
     const newUser = await authRepository.createUser(userData);
 
-    // Clean up OTP and verification data after successful verification
-    await authRepository.deleteOTPCode(email);
+    // Clean up token and verification data after successful verification
     await authRepository.deleteVerificationData(email);
 
     const accessToken = await generateToken(newUser, res);

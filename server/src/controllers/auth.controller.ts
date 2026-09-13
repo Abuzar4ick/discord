@@ -19,22 +19,18 @@ export const authController = {
       throw badRequest("A valid username is required.");
     }
 
-    const result = await authService.signup({ email, password, username });
+    const result = await authService.signup({ email, password, username, is_verified: false });
     success(res, result);
   }),
 
-  verifyOTP: asyncHandler(async (req: Request, res: Response) => {
-    const { email, otp } = req.body;
+  verifyEmail: asyncHandler(async (req: Request, res: Response) => {
+    const token = req.query.token;
 
-    if (!email || typeof email !== "string" || !email.includes("@")) {
-      throw badRequest("A valid email is required.");
+    if (typeof token !== "string" || !token) {
+      throw badRequest("A verification token is required.");
     }
 
-    if (!otp || typeof otp !== "string" || otp.length !== 6) {
-      throw badRequest("A valid 6-digit OTP is required.");
-    }
-
-    const result = await authService.verifyOTP(email, otp, res);
+    const result = await authService.verifyEmail(res, token);
     success(res, result);
   }),
 
@@ -60,7 +56,7 @@ export const authController = {
       throw badRequest("Refresh token is required.");
     }
 
-    const result = await await authService.refreshToken(refreshToken, res);
+    const result = await await authService.refreshToken(refreshToken);
     success(res, result);
   }),
 
