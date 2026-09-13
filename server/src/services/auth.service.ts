@@ -74,7 +74,7 @@ export const authService = {
     return { accessToken };
   },
 
-  async refreshToken(refreshToken: string, res: Response) {
+  async refreshToken(refreshToken: string) {
     let payload: { id?: string };
 
     try {
