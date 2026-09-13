@@ -1,6 +1,5 @@
-export function otpEmailHtml(otp: string): string {
+export function verifyEmailHTML(verifyUrl: string): string {
   const expiresIn = "5 minutes";
-  const spacedCode = otp.split("").join(" ");
 
   const logoBlock = `
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -44,23 +43,20 @@ export function otpEmailHtml(otp: string): string {
                 Verify your account
               </h1>
               <p style="margin: 0 0 28px 0; font-size: 14px; line-height: 20px; color: #B5BAC1;">
-                Enter this code to finish signing in. It expires in ${expiresIn}.
+                Click the button below to finish signing in. It expires in ${expiresIn}.
               </p>
             </td>
           </tr>
 
-          <!-- OTP Code -->
+          <!-- Verify Button -->
           <tr>
             <td align="center" style="padding: 0 32px;">
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
-                <tr>
-                  <td align="center" style="background-color: #2B2D31; border: 1px solid #1E1F22; border-radius: 8px; padding: 20px 16px;">
-                    <span style="font-family: 'Courier New', Courier, monospace; font-size: 32px; font-weight: 700; letter-spacing: 6px; color: #ffffff;">
-                      ${spacedCode}
-                    </span>
-                  </td>
-                </tr>
-              </table>
+              <a
+                href="${verifyUrl}"
+                style="display: inline-block; padding: 12px 28px; background-color: #5865F2; border-radius: 6px; color: #ffffff; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 600; text-decoration: none;"
+              >
+                Verify
+              </a>
             </td>
           </tr>
 
@@ -68,7 +64,7 @@ export function otpEmailHtml(otp: string): string {
           <tr>
             <td align="center" style="padding: 20px 32px 0 32px;">
               <p style="margin: 0; font-size: 13px; line-height: 18px; color: #949BA4;">
-                This code will expire in <strong style="color: #B5BAC1;">${expiresIn}</strong>.
+                This link will expire in <strong style="color: #B5BAC1;">${expiresIn}</strong>.
                 Didn't request this? You can safely ignore this email.
               </p>
             </td>

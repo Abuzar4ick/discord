@@ -4,6 +4,7 @@ export interface User {
   email: string;
   password: string;
   avatar?: string;
+  is_verified: boolean;
   created_at?: Date;
 }
 

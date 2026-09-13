@@ -17,6 +17,13 @@ export const authRepository = {
     return result.rows[0];
   },
 
+  async findUserById(id: string): Promise<Express.User | null> {
+    const query = "SELECT * FROM users WHERE id = $1";
+    const result = await pool.query(query, [id]);
+
+    return result.rows[0];
+  },
+
   async createUser(data: CreateUser): Promise<Express.User> {
     const query =
       "INSERT INTO users (email, password, username) VALUES ($1, $2, $3) RETURNING *";
@@ -28,19 +35,6 @@ export const authRepository = {
     ]);
 
     return result.rows[0];
-  },
-
-  async storeOTPCode(email: string, otp: string): Promise<void> {
-    await redisClient.setEx(email, 300, otp);
-  },
-
-  async verifyOTPCode(email: string, otp: string): Promise<boolean> {
-    const storedOTP = await redisClient.get(email);
-    return storedOTP === otp;
-  },
-
-  async deleteOTPCode(email: string): Promise<void> {
-    await redisClient.del(email);
   },
 
   storeRefreshToken: async (
@@ -56,6 +50,17 @@ export const authRepository = {
 
   deleteRefreshToken: async (userId: string): Promise<void> => {
     await redisClient.del(userId);
+  },
+
+  storeEmailVerificationToken: async (
+    token: string,
+    email: string,
+  ): Promise<void> => {
+    await redisClient.setEx(`verify:${token}`, 300, email);
+  },
+
+  consumeEmailVerificationToken: async (token: string): Promise<string | null> => {
+    return await redisClient.getDel(`verify:${token}`);
   },
 
   storeVerificationData: async (
