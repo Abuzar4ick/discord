@@ -37,6 +37,11 @@ export const authRepository = {
     return result.rows[0];
   },
 
+  async markUserAsVerified(userId: number): Promise<void> {
+    const query = "UPDATE users SET is_verified = true WHERE id = $1";
+    await pool.query(query, [userId]);
+  },
+
   storeRefreshToken: async (
     userId: string,
     refreshToken: string,
@@ -59,7 +64,9 @@ export const authRepository = {
     await redisClient.setEx(`verify:${token}`, 300, email);
   },
 
-  consumeEmailVerificationToken: async (token: string): Promise<string | null> => {
+  consumeEmailVerificationToken: async (
+    token: string,
+  ): Promise<string | null> => {
     return await redisClient.getDel(`verify:${token}`);
   },
 
