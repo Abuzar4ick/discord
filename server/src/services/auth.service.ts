@@ -51,6 +51,8 @@ export const authService = {
 
     const newUser = await authRepository.createUser(userData);
 
+    await authRepository.markUserAsVerified(newUser.id);
+
     // Clean up token and verification data after successful verification
     await authRepository.deleteVerificationData(email);
 
