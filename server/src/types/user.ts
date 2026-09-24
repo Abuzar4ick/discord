@@ -1,4 +1,4 @@
-export interface User {
+export interface IUser {
   id: number;
   username: string;
   email: string;
@@ -8,4 +8,4 @@ export interface User {
   created_at?: Date;
 }
 
-export type CreateUser = Omit<User, "id">;
+export type CreateUser = Omit<IUser, "id">;
