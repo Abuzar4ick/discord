@@ -5,7 +5,7 @@ export interface User {
   password: string;
   avatar?: string;
   is_verified: boolean;
-  created_at?: Date;
+  created_at: Date;
 }
 
-export type CreateUser = Omit<User, "id">;
+export type CreateUser = Omit<User, "id" | "created_at">;
