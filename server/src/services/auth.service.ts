@@ -14,7 +14,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export const authService = {
-  async signup(data: CreateUser) {
+  async signup(data: CreateUser): Promise<{ message: string }> {
     const existingUser = await authRepository.findUserByEmail(data.email);
     if (existingUser) {
       throw conflict("User already exists");
@@ -38,7 +38,7 @@ export const authService = {
     return { message: "Verification email sent" };
   },
 
-  async verifyEmail(res: Response, token: string) {
+  async verifyEmail(res: Response, token: string): Promise<{ accessToken: string }> {
     const email = await authRepository.consumeEmailVerificationToken(token);
     if (!email) {
       throw unauthorized("Invalid or expired verification token.");
@@ -60,7 +60,7 @@ export const authService = {
     return { accessToken };
   },
 
-  async login(email: string, password: string, res: Response) {
+  async login(email: string, password: string, res: Response): Promise<{ accessToken: string }> {
     const user = await authRepository.findUserByEmail(email);
     if (!user) {
       throw notFound("User not found");
@@ -111,7 +111,7 @@ export const authService = {
     return { newAccessToken }
   },
 
-  async logout(userId: string, res: Response) {
+  async logout(userId: string, res: Response): Promise<void> {
     await authRepository.deleteRefreshToken(userId);
     res.clearCookie("refreshToken");
   },
