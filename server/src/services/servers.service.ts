@@ -6,7 +6,7 @@ import cloudinary from "../config/cloudinary.js";
 export const serversServer = {
   async createNewServer(data: CreateServer, userId: number): Promise<IServer> {
     if (data.icon) {
-      const uploadResult = await cloudinary.uploader.upload(data.icon);
+      const uploadResult = await cloudinary.uploader.upload(data.icon, { folder: "servers" });
       data.icon = uploadResult.secure_url;
     }
 
@@ -25,7 +25,7 @@ export const serversServer = {
     if (!existingServer) throw badRequest("Server not found");
 
     if (existingServer.icon !== data.icon) {
-      const uploadResult = await cloudinary.uploader.upload(data.icon);
+      const uploadResult = await cloudinary.uploader.upload(data.icon, { folder: "servers" });
       data.icon = uploadResult.secure_url;
     }
 
