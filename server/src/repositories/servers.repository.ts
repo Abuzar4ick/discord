@@ -21,6 +21,13 @@ export const serversRepository = {
     return result.rows[0];
   },
 
+  async getServerById(id: number): Promise<IServer | null> {
+    const query = "SELECT * FROM servers WHERE id = $1";
+    const result = await pool.query(query, [id]);
+
+    return result.rows[0] || null;
+  },
+
   async updateServer(
     id: number,
     name: string,

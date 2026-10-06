@@ -2,6 +2,8 @@ import { Router } from "express";
 import { serversController } from "../controllers/servers.controller.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 
+// import 
+
 const router = Router();
 
 router.post("/", authMiddleware, serversController.createNewserver);
