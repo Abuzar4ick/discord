@@ -1,5 +1,5 @@
 import type { Response } from "express";
-import { authRepository } from "../repositories/auth.repository.js";
+import { authRepository as repository } from "../repositories/auth.repository.js";
 import { generateToken } from "../utils/generateToken.js";
 import {
   notFound,
@@ -15,12 +15,12 @@ import jwt from "jsonwebtoken";
 
 export const authService = {
   async signup(data: CreateUser): Promise<{ message: string }> {
-    const existingUser = await authRepository.findUserByEmail(data.email);
+    const existingUser = await repository.findUserByEmail(data.email);
     if (existingUser) {
       throw conflict("User already exists");
     }
 
-    const isUsernameTaken = await authRepository.findUserByUsername(
+    const isUsernameTaken = await repository.findUserByUsername(
       data.username,
     );
     if (isUsernameTaken) {
@@ -33,35 +33,35 @@ export const authService = {
 
     data.password = hashedPassword;
 
-    await authRepository.storeVerificationData(data.email, data);
+    await repository.storeVerificationData(data.email, data);
 
     return { message: "Verification email sent" };
   },
 
   async verifyEmail(res: Response, token: string): Promise<{ accessToken: string }> {
-    const email = await authRepository.consumeEmailVerificationToken(token);
+    const email = await repository.consumeEmailVerificationToken(token);
     if (!email) {
       throw unauthorized("Invalid or expired verification token.");
     }
 
-    const userData = await authRepository.getVerificationData(email);
+    const userData = await repository.getVerificationData(email);
     if (!userData) {
       throw badRequest("Verification data expired or not found");
     }
 
-    const newUser = await authRepository.createUser(userData);
+    const newUser = await repository.createUser(userData);
 
-    await authRepository.markUserAsVerified(newUser.id);
+    await repository.markUserAsVerified(newUser.id);
 
     // Clean up token and verification data after successful verification
-    await authRepository.deleteVerificationData(email);
+    await repository.deleteVerificationData(email);
 
     const accessToken = await generateToken(newUser, res);
     return { accessToken };
   },
 
   async login(email: string, password: string, res: Response): Promise<{ accessToken: string }> {
-    const user = await authRepository.findUserByEmail(email);
+    const user = await repository.findUserByEmail(email);
     if (!user) {
       throw notFound("User not found");
     }
@@ -90,12 +90,12 @@ export const authService = {
       throw unauthorized("Invalid refresh token payload.");
     }
 
-    const stored = await authRepository.getRefreshToken(payload.id);
+    const stored = await repository.getRefreshToken(payload.id);
     if (!stored || stored !== refreshToken) {
       throw unauthorized("Refresh token not found.");
     }
 
-    const existingUser = await authRepository.findUserById(payload.id);
+    const existingUser = await repository.findUserById(payload.id);
     if (!existingUser) {
       throw unauthorized("User not found.");
     }
@@ -112,7 +112,7 @@ export const authService = {
   },
 
   async logout(userId: string, res: Response): Promise<void> {
-    await authRepository.deleteRefreshToken(userId);
+    await repository.deleteRefreshToken(userId);
     res.clearCookie("refreshToken");
   },
 };
