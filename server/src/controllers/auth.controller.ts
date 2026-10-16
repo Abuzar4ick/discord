@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { authService } from "../services/auth.service.js";
+import { authService as service } from "../services/auth.service.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { success, badRequest } from "../utils/response.js";
 
@@ -19,7 +19,7 @@ export const authController = {
       throw badRequest("A valid username is required.");
     }
 
-    const result = await authService.signup({ email, password, username, is_verified: false });
+    const result = await service.signup({ email, password, username, is_verified: false });
     success(res, result);
   }),
 
@@ -30,7 +30,7 @@ export const authController = {
       throw badRequest("A verification token is required.");
     }
 
-    const result = await authService.verifyEmail(res, token);
+    const result = await service.verifyEmail(res, token);
     success(res, result);
   }),
 
@@ -45,7 +45,7 @@ export const authController = {
       throw badRequest("A valid password is required.");
     }
 
-    const result = await authService.login(email, password, res);
+    const result = await service.login(email, password, res);
     success(res, result);
   }),
 
@@ -56,7 +56,7 @@ export const authController = {
       throw badRequest("Refresh token is required.");
     }
 
-    const result = await await authService.refreshToken(refreshToken);
+    const result = await await service.refreshToken(refreshToken);
     success(res, result);
   }),
 
@@ -66,6 +66,6 @@ export const authController = {
       throw badRequest("User ID is required for logout.");
     }
 
-    await authService.logout(userId.toString(), res);
+    await service.logout(userId.toString(), res);
   }),
 };
