@@ -1,13 +1,12 @@
 import { Router } from "express";
-import { serversController } from "../controllers/servers.controller.js";
+import { serversController as controller } from "../controllers/servers.controller.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
-
-// import 
 
 const router = Router();
 
-router.post("/", authMiddleware, serversController.createNewserver);
-router.put("/:id", authMiddleware, serversController.updateServer);
-router.delete("/:id", authMiddleware, serversController.deleteServer);
+router.get("/:id", authMiddleware, controller.getServerById);
+router.post("/", authMiddleware, controller.createNewserver);
+router.put("/:id", authMiddleware, controller.updateServer);
+router.delete("/:id", authMiddleware, controller.deleteServer);
 
 export default router;

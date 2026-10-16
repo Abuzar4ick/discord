@@ -1,17 +1,22 @@
 import type { Request, Response } from "express";
-import { serversServer } from "../services/servers.service.js";
+import { serversService as service } from "../services/servers.service.js";
 import { IServer, CreateServer } from "../types/server.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { success, badRequest } from "../utils/response.js";
 
 export const serversController = {
+  getServerById: asyncHandler(async (req: Request, res: Response) => {
+    const serverData = await service.getServerById(Number(req.params.id));
+    success(res, serverData);
+  }),
+
   createNewserver: asyncHandler(async (req: Request, res: Response) => {
     const data: CreateServer = req.body;
     const userId: number = req.user?.id as number;
 
     if (!data.name) throw badRequest("Server name is required");
 
-    const newServer: IServer = await serversServer.createNewServer(
+    const newServer: IServer = await service.createNewServer(
       data,
       userId,
     );
@@ -31,7 +36,7 @@ export const serversController = {
       );
     }
 
-    const updatedServer: IServer = await serversServer.updateServer(
+    const updatedServer: IServer = await service.updateServer(
       { name, icon },
       serverId,
       userId,
@@ -45,7 +50,7 @@ export const serversController = {
     const serverId: number = req.params.id as unknown as number;
     const userId: number = req.user?.id as number;
 
-    const deletedServer: boolean = await serversServer.deleteServer(
+    const deletedServer: boolean = await service.deleteServer(
       serverId,
       userId,
     );
