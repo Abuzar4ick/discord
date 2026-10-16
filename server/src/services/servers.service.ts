@@ -1,6 +1,6 @@
 import { serversRepository as repository } from "../repositories/servers.repository.js";
 import { IServer, CreateServer } from "../types/server.js";
-import { badRequest, unauthorized } from "../utils/response.js";
+import { badRequest, notFound, unauthorized } from "../utils/response.js";
 import cloudinary from "../config/cloudinary.js";
 
 async function isUserAvailable(
@@ -11,7 +11,14 @@ async function isUserAvailable(
   return result;
 }
 
-export const serversServer = {
+export const serversService = {
+  async getServerById(id: number): Promise<IServer> {
+    const serverData = await repository.getServerById(id);
+    if (!serverData) throw notFound("Server not found");
+
+    return serverData;
+  },
+
   async createNewServer(data: CreateServer, userId: number): Promise<IServer> {
     if (data.icon) {
       const uploadResult = await cloudinary.uploader.upload(data.icon, {
@@ -32,7 +39,7 @@ export const serversServer = {
     userId: number,
   ): Promise<IServer> {
     const existingServer = await repository.getServerById(id);
-    if (!existingServer) throw badRequest("Server not found");
+    if (!existingServer) throw notFound("Server not found");
 
     const isOwner = await isUserAvailable(id, userId);
     if (!isOwner) throw unauthorized("Only owner can update the server");
