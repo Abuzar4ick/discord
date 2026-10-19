@@ -17,6 +17,13 @@ export const serverMembersService = {
     return addedMember;
   },
 
+  async kickOutMember(server_id: number, member_id: number): Promise<boolean> {
+    const deletedMember = await repository.deleteMember(server_id, member_id);
+    if (!deletedMember) throw badRequest("Failed to delete server_member from server");
+
+    return deletedMember;
+  },
+
   async findMembersByServerId(server_id: number) {
     const members = await repository.findByServerId(server_id);
     return members;

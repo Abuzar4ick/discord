@@ -22,6 +22,15 @@ export const serverMembersRepo = {
     return result.rows[0];
   },
 
+  async deleteMember(server_id: number, member_id: number): Promise<boolean> {
+    const result = await pool.query(
+      `DELETE FROM server_members WHERE server_id = $1 AND member_id = $2`,
+      [server_id, member_id],
+    );
+
+    return (result.rowCount ?? 0) > 0;
+  },
+
   async findByServerId(server_id: number): Promise<IServerMember[]> {
     const membersId = await pool.query(
       `SELECT * FROM server_members WHERE server_id = $1`,
