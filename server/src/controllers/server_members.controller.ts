@@ -14,8 +14,24 @@ export const serverMembersController = {
     return success(res, addedMember, 201);
   },
 
+  async kickOutMember(req: Request, res: Response) {
+    const server_id = req.params.server_id as unknown as number;
+    const member_id = req.body as number;
+
+    if (!server_id || !member_id) {
+      throw badRequest("server_id and user_id are required");
+    }
+
+    const result = await service.kickOutMember(server_id, member_id);
+    success(res, result);
+  },
+
   async findMembersByServerId(req: Request, res: Response) {
     const server_id = req.params.server_id as unknown as number;
+
+    if (!server_id) {
+      throw badRequest("server_id is required");
+    }
 
     const members = await service.findMembersByServerId(server_id);
     return success(res, members);

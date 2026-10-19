@@ -5,7 +5,10 @@ import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
-router.post("/", authMiddleware, controller.addMember);
-router.get("/:server_id", authMiddleware, controller.findMembersByServerId);
+router.use(authMiddleware);
+
+router.post("/", controller.addMember);
+router.delete("/:server_id", controller.kickOutMember);
+router.get("/:server_id", controller.findMembersByServerId);
 
 export default router;
