@@ -16,11 +16,7 @@ export const serversController = {
 
     if (!data.name) throw badRequest("Server name is required");
 
-    const newServer: IServer = await service.createNewServer(
-      data,
-      userId,
-    );
-    if (!newServer) throw badRequest("Failed to create new server");
+    const newServer: IServer = await service.createNewServer(data, userId);
 
     success(res, newServer);
   }),
@@ -41,7 +37,6 @@ export const serversController = {
       serverId,
       userId,
     );
-    if (!updatedServer) throw badRequest("Failed to update server");
 
     success(res, updatedServer);
   }),
@@ -50,11 +45,7 @@ export const serversController = {
     const serverId: number = req.params.id as unknown as number;
     const userId: number = req.user?.id as number;
 
-    const deletedServer: boolean = await service.deleteServer(
-      serverId,
-      userId,
-    );
-    if (!deletedServer) throw badRequest("Failed to delete server");
+    await service.deleteServer(serverId, userId);
 
     success(res, { message: "Server deleted successfully" });
   }),
