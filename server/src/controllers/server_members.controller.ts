@@ -22,8 +22,11 @@ export const serverMembersController = {
       throw badRequest("server_id and user_id are required");
     }
 
-    const result = await service.kickOutMember(server_id, member_id);
-    success(res, result);
+    await service.kickOutMember(server_id, member_id);
+
+    success(res, {
+      message: "User is successfully kicked out from server",
+    });
   },
 
   async findMembersByServerId(req: Request, res: Response) {
