@@ -1,10 +1,7 @@
+import { HomePage } from './pages/HomePage/HomePage'
 
 const App = () => {
-  return (
-    <div>
-      Hello, Discord!
-    </div>
-  )
+  return <HomePage />
 }
 
 export default App

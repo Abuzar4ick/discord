@@ -1,1 +1,31 @@
 @import "tailwindcss";
+@plugin "daisyui";
+
+/* Discord-inspired dark palette via DaisyUI theme tokens */
+@plugin "daisyui/theme" {
+  name: "litecord";
+  default: true;
+  prefersdark: true;
+  color-scheme: dark;
+
+  --color-base-100: oklch(24% 0.02 264);
+  --color-base-200: oklch(21% 0.02 264);
+  --color-base-300: oklch(18% 0.02 264);
+  --color-base-content: oklch(95% 0.01 264);
+  --color-primary: oklch(58% 0.18 264);
+  --color-primary-content: oklch(98% 0.01 264);
+  --color-neutral: oklch(32% 0.02 264);
+  --color-neutral-content: oklch(95% 0.01 264);
+  --color-success: oklch(65% 0.15 145);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  @apply bg-base-100 text-base-content antialiased;
+}
